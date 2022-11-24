@@ -63,24 +63,35 @@ int main(void)
 void crear_registro(password *registro, FILE *file)
 {
    srand(time(NULL));
+   short flag = 0;
 
-   printf("Crear un nuevo registro\n\n");
+   do
+   {
+      printf("Crear un nuevo registro\n\n");
 
-   printf("Introduzca los siguientes datos: \n");
+      printf("Introduzca los siguientes datos: \n");
 
-   printf("Sitio: ");
-   gets(registro[0].sitio);
+      printf("Sitio: ");
+      gets(registro[0].sitio);
 
-   printf("Usuario: ");
-   gets(registro[0].usuario);
+      printf("Usuario: ");
+      gets(registro[0].usuario);
 
-   printf("Contenido: ");
-   gets(registro[0].contenido);
+      printf("Contraseña: ");
+      gets(registro[0].contenido);
 
-   registro[0].token = rand() % 101 + 1;
-   registro[0].visibilidad = 1;
+      registro[0].token = rand() % 101 + 1;
+      registro[0].visibilidad = 1;
 
-   printf("%s\n%s\n%s\n%d\n%d\n", registro[0].sitio, registro[0].usuario, registro[0].contenido, registro[0].token, registro[0].visibilidad); // Agregar funcionalidad de confirmación y corrección
+      printf("Sitio: %s\nUsuario: %s\nContraseña: %s\n",
+             registro[0].sitio,
+             registro[0].usuario,
+             registro[0].contenido);
+
+      printf("¿Los datos son correctos? (Y/n) (1/0)\n");
+      scanf("%d", &flag);
+      fflush(stdin);
+   } while (!flag == 1);
 
    escribir_registro(registro, file);
 }
@@ -113,12 +124,12 @@ void leer(password *registro, FILE *file)
    }
    else
    {
-      while (fread(&temp[0], sizeof(password), 1, file) > 0)
+      while (!feof(file))
       {
          fread(&temp[0], sizeof(password), 1, file);
          imprimir_registro(temp, flag);
          flag++;
-      }
+      } // Error: 1
    }
 
    fclose(file);
@@ -126,10 +137,12 @@ void leer(password *registro, FILE *file)
 
 void imprimir_registro(password *registro, int flag)
 {
-   printf("Registro #%d\n", flag); // Añadir numerador
+   printf("Registro #%d\n", flag);
+   printf("--------------------------------------------\n");
    printf("Sitio: %s\n", registro[0].sitio);
    printf("Usuario: %s\n", registro[0].usuario);
    printf("Contraseña: %s\n", registro[0].contenido);
+   printf("============================================\n");
 }
 
 void actualizar()
@@ -141,3 +154,8 @@ void eliminar()
 {
    printf("Eliminar un registro");
 }
+
+/* Listado de errores.
+
+Error 1: Al parecer, se duplica el último registro, pero, solo al momento de imprimir.
+*/

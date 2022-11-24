@@ -24,7 +24,7 @@ void eliminar();
 int main(void)
 {
    setlocale(LC_ALL, "");
-   static password registro[1];
+   password registro[1];
    FILE *file;
    // Menu
    short option = 0;
@@ -64,6 +64,35 @@ void crear_registro(password *registro, FILE *file)
 {
    srand(time(NULL));
    short flag = 0;
+   char sitio_temp[1024], usuario_temp[256], contenido_temp[1024];
+
+   // do
+   // {
+   //    printf("Crear un nuevo registro\n\n");
+
+   //    printf("Introduzca los siguientes datos: \n");
+
+   //    printf("Sitio: ");
+   //    gets(registro[0].sitio);
+
+   //    printf("Usuario: ");
+   //    gets(registro[0].usuario);
+
+   //    printf("Contraseña: ");
+   //    gets(registro[0].contenido);
+
+   //    registro[0].token = rand() % 101 + 1;
+   //    registro[0].visibilidad = 1;
+
+   //    printf("Sitio: %s\nUsuario: %s\nContraseña: %s\n",
+   //           registro[0].sitio,
+   //           registro[0].usuario,
+   //           registro[0].contenido);
+
+   //    printf("¿Los datos son correctos? (Y/n) (1/0)\n");
+   //    scanf("%d", &flag);
+   //    fflush(stdin);
+   // } while (flag != 1);
 
    do
    {
@@ -72,16 +101,13 @@ void crear_registro(password *registro, FILE *file)
       printf("Introduzca los siguientes datos: \n");
 
       printf("Sitio: ");
-      gets(registro[0].sitio);
+      gets(sitio_temp);
 
       printf("Usuario: ");
-      gets(registro[0].usuario);
+      gets(usuario_temp);
 
       printf("Contraseña: ");
-      gets(registro[0].contenido);
-
-      registro[0].token = rand() % 101 + 1;
-      registro[0].visibilidad = 1;
+      gets(contenido_temp);
 
       printf("Sitio: %s\nUsuario: %s\nContraseña: %s\n",
              registro[0].sitio,
@@ -91,7 +117,12 @@ void crear_registro(password *registro, FILE *file)
       printf("¿Los datos son correctos? (Y/n) (1/0)\n");
       scanf("%d", &flag);
       fflush(stdin);
-   } while (!flag == 1);
+   } while (flag != 1);
+
+   printf("Sitio: %s\nUsuario: %s\nContraseña: %s\n",
+          registro[0].sitio,
+          registro[0].usuario,
+          registro[0].contenido);
 
    escribir_registro(registro, file);
 }
@@ -115,7 +146,7 @@ void escribir_registro(password *registro, FILE *file)
 void leer(password *registro, FILE *file)
 {
    file = fopen(NOMBRE_ARCHIVO, "rb");
-   static password temp[1];
+   password temp[1];
    int flag = 1;
 
    if (file == NULL)

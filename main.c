@@ -88,31 +88,10 @@ void crear_registro(password *registro, FILE *file)
              registro[0].usuario,
              registro[0].contenido);
 
-      printf("¿Los datos son correctos? (Y/n) (1/0)\n");
+      printf("¿Los datos son correctos? (Y/n) (1/0)\n"); // MOdificar para que funcione con Y/n
       scanf("%hd", &flag);
       fflush(stdin);
    } while (flag != 1);
-
-   // printf("Crear un nuevo registro\n\n");
-
-   // printf("Introduzca los siguientes datos: \n");
-
-   // printf("Sitio: ");
-   // gets(registro[0].sitio);
-
-   // printf("Usuario: ");
-   // gets(registro[0].usuario);
-
-   // printf("Contraseña: ");
-   // gets(registro[0].contenido);
-
-   // registro[0].token = rand() % 101 + 1;
-   // registro[0].visibilidad = 1;
-
-   // printf("Sitio: %s\nUsuario: %s\nContraseña: %s\n",
-   //        registro[0].sitio,
-   //        registro[0].usuario,
-   //        registro[0].contenido);
 
    escribir_registro(registro, file);
 }

@@ -6,6 +6,7 @@
 
 typedef struct
 {
+   int ID;
    char sitio[1024];
    char usuario[256];
    char contenido[1024];
@@ -71,13 +72,13 @@ void crear_registro(password *registro, FILE *file)
 
       printf("Introduzca los siguientes datos: \n");
 
-      printf("Sitio: ");
+      printf("\tSitio: ");
       gets(registro[0].sitio);
 
-      printf("Usuario: ");
+      printf("\tUsuario: ");
       gets(registro[0].usuario);
 
-      printf("Contraseña: ");
+      printf("\tContraseña: ");
       gets(registro[0].contenido);
 
       registro[0].token = rand() % 101 + 1;
@@ -88,7 +89,7 @@ void crear_registro(password *registro, FILE *file)
              registro[0].usuario,
              registro[0].contenido);
 
-      printf("¿Los datos son correctos? (Y/n) (1/0)\n"); // MOdificar para que funcione con Y/n
+      printf("¿Los datos son correctos? (Y/n) (1/0)\n"); // Modificar para que funcione con Y/n
       scanf("%hd", &flag);
       fflush(stdin);
    } while (flag != 1);
@@ -101,12 +102,12 @@ void escribir_registro(password *registro, FILE *file)
    file = fopen(NOMBRE_ARCHIVO, "ab");
    if (file == NULL)
    {
-      printf("Error: no se puede acceder al archivo. (cod.ab)");
+      printf("Error: no se puede acceder al archivo. (cod.ab)\n");
    }
    else
    {
       fwrite(&registro[0], sizeof(password), 1, file);
-      printf("Registro guardado con éxito");
+      printf("Registro guardado con éxito\n");
    }
    fflush(file);
    fclose(file);
@@ -120,7 +121,7 @@ void leer(password *registro, FILE *file)
 
    if (file == NULL)
    {
-      printf("Error: no se puede acceder al archivo. (cod.rd)");
+      printf("Error: no se puede acceder al archivo. (cod.rd)\n");
    }
    else
    {
@@ -156,6 +157,5 @@ void eliminar()
 }
 
 /* Listado de errores.
-
 Error 1: Al parecer, se duplica el último registro, pero, solo al momento de imprimir.
 */

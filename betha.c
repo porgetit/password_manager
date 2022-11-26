@@ -4,15 +4,15 @@
 #include <locale.h>
 #include <windows.h>
 #define NOMBRE_ARCHIVO "./data/data.bin"
-#define Len 100
-#define Wait 1.125
+#define Len 1024
+#define Wait 1125
 
 typedef struct
 {
    int ID;
    char sitio[1024];
    char usuario[256];
-   char contenido[1024];
+   char contenido[1024]; // contraseña
    int token;
    short visibilidad;
 } password;
@@ -30,10 +30,10 @@ void delete_data();
 
 /* FUNCIONES DE MANIPULACIÓN DE DATOS EN MEMORIA */
 //    Funciones de impresión de datos
-void ver_registros_menu(password *, FILE *);
-void all_records(password *, FILE *);
-void find_record(password *, FILE *);
-void filter_records(password *, FILE *);
+void ver_registros_menu(password *);
+void all_records(password *);
+void find_record(password *);
+void filter_records(password *);
 
 //    Funciones de creación de datos
 void crear_registros_menu(password *, FILE *);
@@ -93,10 +93,10 @@ int main(void)
       case 0:
          clear();
          printf("Saliendo...\n");
-         sleep(Wait);
+         Sleep(Wait);
          break;
       case 1:
-         ver_registros_menu(registros, data);
+         ver_registros_menu(registros);
          break;
       case 2:
          crear_registros_menu(registros, data);
@@ -111,13 +111,13 @@ int main(void)
          reportes_menu(registros, data);
          break;
       default:
-         printf("Error de menu 1: main()");
+         printf("Error de menu 1: main()\n");
       }
 
    } while (option != 0);
 }
 
-void ver_registros_menu(password *registros, FILE *data)
+void ver_registros_menu(password *registros)
 {
    short option;
 
@@ -147,17 +147,131 @@ void ver_registros_menu(password *registros, FILE *data)
       case 0:
          break;
       case 1:
-         all_records(registros, data);
+         all_records(registros);
          break;
       case 2:
-         find_record(registros, data);
+         find_record(registros);
          break;
       case 3:
-         filter_records(registros, data);
+         filter_records(registros);
          break;
       default:
-         printf("Error de menu 1: ver_registros_menu()");
+         printf("Error de menu 1: ver_registros_menu()\n");
       }
+   } while (option != 0);
+}
+
+void all_records(password *registros)
+{
+   // Limpiamos pantalla
+   clear();
+
+   short option;
+
+   do
+   {
+      boldBar(80);
+      printf("\t\tLISTADO DE REGISTROS");
+      lightBar(80);
+      lightBar(80);
+      for (int flag = 0; sizeof(registros[flag]) == sizeof(password); flag++)
+      {
+         printf("|\t%d\t|\t", registros[flag].ID);
+         printf("%s\t|\t", registros[flag].sitio);
+         printf("%s\t|\t", registros[flag].usuario);
+         printf("%s\t|\n", registros[flag].contenido); // Implementar el cifrado que hizo Manito
+      }
+      boldBar(80);
+
+      printf("\n¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0):");
+      scanf("%hd", &option);
+      fflush(stdin);
+
+      switch (option)
+      {
+      case 0:
+         break;
+      case 1:
+         printf("Exportando..."); // Aquí es donde entran las funciones de reportes
+         Sleep(Wait);
+         break;
+      default:
+         printf("Error de menu 1: all_records()\n");
+      }
+
+   } while (option != 0);
+}
+
+void find_record(password *registros)
+{
+   // Limpiamos pantalla
+   clear();
+
+   short option, ID_temp, baton = 0;
+
+   do
+   {
+      printf("¿Qué registro desea ver? (ID): ");
+      scanf("%hd", &ID_temp);
+      fflush(stdin);
+
+      for (int flag = 0; sizeof(registros[flag]) == sizeof(password); flag++)
+      {
+         if (ID_temp == registros[flag].ID)
+         {
+            printf("|\t%d\t|\t", registros[flag].ID);
+            printf("%s\t|\t", registros[flag].sitio);
+            printf("%s\t|\t", registros[flag].usuario);
+            printf("%s\t|\n", registros[flag].contenido);
+            baton = 1;
+         }
+      }
+
+      if (baton == 0)
+      {
+         printf("Error de busqueda 1: find_record()\n");
+         Sleep(Wait);
+         clear();
+         do
+         {
+            printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+            scanf("%hd", &option);
+            fflush(stdin);
+
+            switch (option)
+            {
+            case 0:
+               break;
+            case 1:
+               find_record(registros);
+               break;
+            default:
+               printf("Error de menu 1: all_records()\n");
+            }
+         } while (option != 0);
+
+         if (option == 0)
+         {
+            break;
+         }
+      }
+
+      printf("\n¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0): ");
+      scanf("%hd", &option);
+      fflush(stdin);
+
+      switch (option)
+      {
+      case 0:
+         break;
+      case 1:
+         printf("Exportando..."); // Aquí es donde entran las funciones de reportes
+         Sleep(Wait);
+         break;
+      default:
+         printf("Error de menu 1: all_records()\n");
+      }
+
    } while (option != 0);
 }
 
@@ -196,7 +310,7 @@ void crear_registros_menu(password *registros, FILE *data)
          create_record(registros, data, 1);
          break;
       default:
-         printf("Error de menu 1: crear_registros_menu()");
+         printf("Error de menu 1: crear_registros_menu()\n");
       }
    } while (option != 0);
 }
@@ -236,7 +350,7 @@ void actualizar_registros_menu(password *registros, FILE *data)
          update_gob_record(registros, data);
          break;
       default:
-         printf("Error de menu 1: actualizar_registros_menu()");
+         printf("Error de menu 1: actualizar_registros_menu()\n");
       }
    } while (option != 0);
 }
@@ -280,7 +394,7 @@ void eliminar_registros_menu(password *registros, FILE *data)
          delete_data();
          break;
       default:
-         printf("Error de menu 1: eliminar_registros_menu()");
+         printf("Error de menu 1: eliminar_registros_menu()\n");
       }
    } while (option != 0);
 }
@@ -293,7 +407,7 @@ void init_data(password *registros, FILE *data)
    {
       printf("Error de lectura 1: init_data()\n");
       printf("Creando el archivo...\n");
-      sleep(Wait);
+      Sleep(Wait);
       data = fopen(NOMBRE_ARCHIVO, "wb");
       fflush(data);
       fclose(data);
@@ -314,7 +428,7 @@ void init_data(password *registros, FILE *data)
       }
 
       printf("Registros inicializados con éxito...\n");
-      sleep(Wait);
+      Sleep(Wait);
    }
 }
 

@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <string.h>
 #define NOMBRE_ARCHIVO "./data/data.bin"
-#define Len 1024
+#define Len 100
 #define Wait 1125
 
 typedef struct
@@ -73,10 +73,10 @@ int main(void)
    do
    {
       // Limpiamos pantalla
-      clear();
+      // clear();
 
       boldBar(40);
-      printf("MENÚ PRINCIPAL");
+      printf("MENÚ PRINCIPAL\n");
 
       lightBar(40);
       printf("\t>> 1: Ver registros.\n");
@@ -96,7 +96,7 @@ int main(void)
       switch (option)
       {
       case 0:
-         clear();
+         // clear();
          printf("Saliendo...\n");
          Sleep(Wait);
          break;
@@ -129,10 +129,10 @@ void ver_registros_menu(password *registros, int len)
    do
    {
       // Limpiamos pantalla
-      clear();
+      // clear();
 
       boldBar(40);
-      printf("MENÚ VER REGISTROS");
+      printf("MENÚ VER REGISTROS\n");
 
       lightBar(40);
       printf("\t>> 1: Listar todos los registros.\n");
@@ -152,13 +152,13 @@ void ver_registros_menu(password *registros, int len)
       case 0:
          break;
       case 1:
-         all_records(registros, len);
+         all_records(registros, len); // Agregar: si no hay regristros, mostrar mensaje "SIN REGISTROS"
          break;
       case 2:
-         find_record(registros, len);
+         find_record(registros, len); // Agregar: si no hay regristros, mostrar mensaje "SIN REGISTROS"
          break;
       case 3:
-         filter_records(registros, len);
+         filter_records(registros, len); // Agregar: si no hay regristros, mostrar mensaje "SIN REGISTROS"
          break;
       default:
          printf("Error de menú 1: ver_registros_menu()\n");
@@ -169,14 +169,14 @@ void ver_registros_menu(password *registros, int len)
 void all_records(password *registros, int len)
 {
    // Limpiamos pantalla
-   clear();
+   // clear();
 
    short option;
 
    do
    {
       boldBar(80);
-      printf("\t\tLISTADO DE REGISTROS");
+      printf("\t\tLISTADO DE REGISTROS\n");
       lightBar(80);
       lightBar(80);
       for (int flag = 0; flag < len; flag++)
@@ -199,8 +199,9 @@ void all_records(password *registros, int len)
       case 0:
          break;
       case 1:
-         printf("Exportando..."); // Aquí es donde entran las funciones de reportes
+         printf("Exportando...\n"); // Aquí es donde entran las funciones de reportes
          Sleep(Wait);
+         option = 0;
          break;
       default:
          printf("Error de menú 1: all_records()\n");
@@ -212,7 +213,7 @@ void all_records(password *registros, int len)
 void find_record(password *registros, int len)
 {
    // Limpiamos pantalla
-   clear();
+   // clear();
 
    short option, ID_temp, baton = 0;
 
@@ -239,7 +240,7 @@ void find_record(password *registros, int len)
       {
          printf("Error de busqueda 1: find_record()\n");
          Sleep(Wait);
-         clear();
+         // clear();
          do
          {
             printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
@@ -275,6 +276,7 @@ void find_record(password *registros, int len)
       case 1:
          printf("Exportando...\n"); // Aquí es donde entran las funciones de reportes
          Sleep(Wait);
+         option = 0;
          break;
       default:
          printf("Error de menú 1: find_record()\n");
@@ -290,10 +292,10 @@ void filter_records(password *registros, int len)
    do
    {
       // Limpiamos pantalla
-      clear();
+      // clear();
 
       boldBar(40);
-      printf("FILTROS");
+      printf("FILTROS\n");
 
       lightBar(40);
       printf("\t>> 1: Filtrar por sitio.\n");
@@ -330,10 +332,10 @@ void crear_registros_menu(password *registros, FILE *data, int *len)
    do
    {
       // Limpiamos pantalla
-      clear();
+      // clear();
 
       boldBar(40);
-      printf("MENÚ CREAR REGISTROS");
+      printf("MENÚ CREAR REGISTROS\n");
 
       lightBar(40);
       printf("\t>> 1: Creación manual.\n");
@@ -368,14 +370,14 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
    short option;
    password temp;
 
-   do
-   {
-      // Limpiamos pantalla
-      clear();
+   // Limpiamos pantalla
+   // clear();
 
-      if (automatic == 0)
+   if (automatic == 0)
+   {
+      // Creación manual
+      do
       {
-         // Creación manual
          boldBar(80);
          printf("CREACIÓN MANUAL DE REGISTRO\n");
          boldBar(80);
@@ -391,26 +393,26 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          gets(temp.contenido);
 
          Sleep(Wait);
-         clear();
+         // clear();
 
          lightBar(80);
-         printf("Sitio: %s", temp.sitio);
+         printf("Sitio: %s\n", temp.sitio);
 
          lightBar(80);
-         printf("Nombre de usuario: %s", temp.usuario);
+         printf("Nombre de usuario: %s\n", temp.usuario);
 
          lightBar(80);
-         printf("Contraseña: %s", temp.contenido);
+         printf("Contraseña: %s\n", temp.contenido);
 
          lightBar(80);
          printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
+         boldBar(80);
 
          switch (option)
          {
          case 0:
-            create_record(registros, data, 0, len);
             break;
          case 1:
             registros[*len].ID = *len;
@@ -426,12 +428,15 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          default:
             printf("Error de menú 1: create_record()\n");
          }
-      }
-      else if (automatic == 1)
-      {
-         int lenNombre, lenPass;
+      } while (option != 1);
+   }
+   else if (automatic == 1)
+   {
+      int lenNombre, lenPass;
 
-         // Creación asistida
+      // Creación asistida
+      do
+      {
          boldBar(80);
          printf("CREACIÓN ASISTIDA DE REGISTRO\n");
          boldBar(80);
@@ -451,15 +456,15 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          rand_strings(temp.contenido, lenPass);
 
          Sleep(Wait);
-         clear();
+         // clear();
 
          lightBar(80);
-         printf("Sitio: %s", temp.sitio);
+         printf("Sitio: %s\n", temp.sitio);
 
          lightBar(80);
-         printf("Nombre de usuario: %s", temp.usuario);
+         printf("Nombre de usuario: %s\n", temp.usuario);
          lightBar(80);
-         printf("Contraseña: %s", temp.contenido);
+         printf("Contraseña: %s\n", temp.contenido);
 
          lightBar(80);
          printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
@@ -469,7 +474,6 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          switch (option)
          {
          case 0:
-            create_record(registros, data, 1, len);
             break;
          case 1:
             registros[*len].ID = *len;
@@ -485,12 +489,12 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          default:
             printf("Error de menú 1: create_record()\n");
          }
-      }
-      else
-      {
-         printf("Error de creación 1: create_record()\n");
-      }
-   } while (option != 0);
+      } while (option != 1);
+   }
+   else
+   {
+      printf("Error de creación 1: create_record()\n");
+   }
 }
 
 void rand_strings(char *cadena, int len)
@@ -511,10 +515,10 @@ void actualizar_registros_menu(password *registros, FILE *data)
    do
    {
       // Limpiamos pantalla
-      clear();
+      // clear();
 
       boldBar(40);
-      printf("MENÚ ACTUALIZAR REGISTROS");
+      printf("MENÚ ACTUALIZAR REGISTROS\n");
 
       lightBar(40);
       printf("\t>> 1: Actualizar todos los datos de un registro.\n");
@@ -561,10 +565,10 @@ void eliminar_registros_menu(password *registros, FILE *data)
    do
    {
       // Limpiamos pantalla
-      clear();
+      // clear();
 
       boldBar(40);
-      printf("MENÚ ELIMINAR REGISTROS");
+      printf("MENÚ ELIMINAR REGISTROS\n");
 
       lightBar(40);
       printf("\t>> 1: Borrar un registro.\n"); // Borrado lógico
@@ -634,12 +638,12 @@ void init_data(password *registros, FILE *data, int *len)
       {
          fread(&registros[flag], sizeof(password), 1, data);
          flag++;
-         *len += 1;
       }
+      *len = flag - 1;
 
       fclose(data);
 
-      if ((sizeof(registros) / sizeof(password)) == 0)
+      if (*len == 0)
       {
          printf("Error de lectura 2: init_data()\n");
       }

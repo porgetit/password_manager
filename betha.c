@@ -7,6 +7,7 @@
 #define NOMBRE_ARCHIVO "./data/data.bin"
 #define Len 100
 #define Wait 1125
+#define BarLen 60
 
 typedef struct
 {
@@ -42,9 +43,9 @@ void create_record(password *, FILE *, short, int *);
 void rand_strings(char *, int);
 
 //    Funciones de actualización de datos
-void actualizar_registros_menu(password *, FILE *);
-void update_all_record(password *, FILE *);
-void update_gob_record(password *, FILE *);
+void actualizar_registros_menu(password *, FILE *, int);
+void update_all_record(password *, FILE *, int);
+void update_gob_record(password *, FILE *, int);
 
 //    Funciones de eliminación de datos
 void eliminar_registros_menu(password *, FILE *);
@@ -75,10 +76,10 @@ int main(void)
       // Limpiamos pantalla
       // clear();
 
-      boldBar(40);
+      boldBar(BarLen);
       printf("MENÚ PRINCIPAL\n");
 
-      lightBar(40);
+      lightBar(BarLen);
       printf("\t>> 1: Ver registros.\n");
       printf("\t>> 2: Crear registros.\n");
       printf("\t>> 3: Actualizar registros.\n");
@@ -86,12 +87,12 @@ int main(void)
       printf("\t>> 5: Reportes.\n");
       printf("\n\t>> 0: Salir del programa.\n");
 
-      boldBar(40);
-      lightBar(40);
+      boldBar(BarLen);
+      lightBar(BarLen);
       printf("Opción: ");
       scanf("%hd", &option);
       fflush(stdin);
-      lightBar(40);
+      lightBar(BarLen);
 
       switch (option)
       {
@@ -107,7 +108,7 @@ int main(void)
          crear_registros_menu(registros, data, &len);
          break;
       case 3:
-         actualizar_registros_menu(registros, data);
+         actualizar_registros_menu(registros, data, len);
          break;
       case 4:
          eliminar_registros_menu(registros, data);
@@ -131,21 +132,21 @@ void ver_registros_menu(password *registros, int len)
       // Limpiamos pantalla
       // clear();
 
-      boldBar(40);
+      boldBar(BarLen);
       printf("MENÚ VER REGISTROS\n");
 
-      lightBar(40);
+      lightBar(BarLen);
       printf("\t>> 1: Listar todos los registros.\n");
       printf("\t>> 2: Buscar un registro.\n");
       printf("\t>> 3: Filtrar registros.\n");
       printf("\n\t>> 0: Volver al menú principal.\n");
 
-      boldBar(40);
-      lightBar(40);
+      boldBar(BarLen);
+      lightBar(BarLen);
       printf("Opción: ");
       scanf("%hd", &option);
       fflush(stdin);
-      lightBar(40);
+      lightBar(BarLen);
 
       switch (option)
       {
@@ -175,20 +176,20 @@ void all_records(password *registros, int len)
 
    do
    {
-      boldBar(80);
+      boldBar(BarLen);
       printf("\t\tLISTADO DE REGISTROS\n");
-      lightBar(80);
-      lightBar(80);
+      lightBar(BarLen);
+      lightBar(BarLen);
       for (int flag = 0; flag < len; flag++)
       {
          printf("|\t%d\t|\t", registros[flag].ID);
          printf("%s\t|\t", registros[flag].sitio);
          printf("%s\t|\t", registros[flag].usuario);
          printf("%s\t|\n", registros[flag].contenido); // Implementar el cifrado que hizo Manito
-         lightBar(80);
+         lightBar(BarLen);
          printf("\n");
       }
-      boldBar(80);
+      boldBar(BarLen);
 
       printf("\n¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0):");
       scanf("%hd", &option);
@@ -294,20 +295,20 @@ void filter_records(password *registros, int len)
       // Limpiamos pantalla
       // clear();
 
-      boldBar(40);
+      boldBar(BarLen);
       printf("FILTROS\n");
 
-      lightBar(40);
+      lightBar(BarLen);
       printf("\t>> 1: Filtrar por sitio.\n");
       printf("\t>> 2: Filtrar por nombre de usuario.\n");
       printf("\n\t>> 0: Volver.\n");
 
-      boldBar(40);
-      lightBar(40);
+      boldBar(BarLen);
+      lightBar(BarLen);
       printf("Opción: ");
       scanf("%hd", &option);
       fflush(stdin);
-      lightBar(40);
+      lightBar(BarLen);
 
       switch (option)
       {
@@ -334,20 +335,20 @@ void crear_registros_menu(password *registros, FILE *data, int *len)
       // Limpiamos pantalla
       // clear();
 
-      boldBar(40);
+      boldBar(BarLen);
       printf("MENÚ CREAR REGISTROS\n");
 
-      lightBar(40);
+      lightBar(BarLen);
       printf("\t>> 1: Creación manual.\n");
       printf("\t>> 2: Creación asistida.\n");
       printf("\n\t>> 0: Volver al menú principal.\n");
 
-      boldBar(40);
-      lightBar(40);
+      boldBar(BarLen);
+      lightBar(BarLen);
       printf("Opción: ");
       scanf("%hd", &option);
       fflush(stdin);
-      lightBar(40);
+      lightBar(BarLen);
 
       switch (option)
       {
@@ -378,10 +379,10 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
       // Creación manual
       do
       {
-         boldBar(80);
+         boldBar(BarLen);
          printf("CREACIÓN MANUAL DE REGISTRO\n");
-         boldBar(80);
-         lightBar(80);
+         boldBar(BarLen);
+         lightBar(BarLen);
 
          printf("Sitio: ");
          gets(temp.sitio);
@@ -395,20 +396,20 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          Sleep(Wait);
          // clear();
 
-         lightBar(80);
+         lightBar(BarLen);
          printf("Sitio: %s\n", temp.sitio);
 
-         lightBar(80);
+         lightBar(BarLen);
          printf("Nombre de usuario: %s\n", temp.usuario);
 
-         lightBar(80);
+         lightBar(BarLen);
          printf("Contraseña: %s\n", temp.contenido);
 
-         lightBar(80);
+         lightBar(BarLen);
          printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
-         boldBar(80);
+         boldBar(BarLen);
 
          switch (option)
          {
@@ -437,10 +438,10 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
       // Creación asistida
       do
       {
-         boldBar(80);
+         boldBar(BarLen);
          printf("CREACIÓN ASISTIDA DE REGISTRO\n");
-         boldBar(80);
-         lightBar(80);
+         boldBar(BarLen);
+         lightBar(BarLen);
 
          printf("Sitio: ");
          gets(temp.sitio);
@@ -458,15 +459,15 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          Sleep(Wait);
          // clear();
 
-         lightBar(80);
+         lightBar(BarLen);
          printf("Sitio: %s\n", temp.sitio);
 
-         lightBar(80);
+         lightBar(BarLen);
          printf("Nombre de usuario: %s\n", temp.usuario);
-         lightBar(80);
+         lightBar(BarLen);
          printf("Contraseña: %s\n", temp.contenido);
 
-         lightBar(80);
+         lightBar(BarLen);
          printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
@@ -508,7 +509,7 @@ void rand_strings(char *cadena, int len)
    }
 }
 
-void actualizar_registros_menu(password *registros, FILE *data)
+void actualizar_registros_menu(password *registros, FILE *data, int len)
 {
    short option;
 
@@ -517,30 +518,30 @@ void actualizar_registros_menu(password *registros, FILE *data)
       // Limpiamos pantalla
       // clear();
 
-      boldBar(40);
+      boldBar(BarLen);
       printf("MENÚ ACTUALIZAR REGISTROS\n");
 
-      lightBar(40);
+      lightBar(BarLen);
       printf("\t>> 1: Actualizar todos los datos de un registro.\n");
       printf("\t>> 2: Actualizar un solo dato de un registro.\n");
       printf("\n\t>> 0: Volver al menú principal.\n");
 
-      boldBar(40);
-      lightBar(40);
+      boldBar(BarLen);
+      lightBar(BarLen);
       printf("Opción: ");
       scanf("%hd", &option);
       fflush(stdin);
-      lightBar(40);
+      lightBar(BarLen);
 
       switch (option)
       {
       case 0:
          break;
       case 1:
-         update_all_record(registros, data);
+         update_all_record(registros, data, len);
          break;
       case 2:
-         update_gob_record(registros, data);
+         update_gob_record(registros, data, len);
          break;
       default:
          printf("Error de menú 1: actualizar_registros_menu()\n");
@@ -548,12 +549,104 @@ void actualizar_registros_menu(password *registros, FILE *data)
    } while (option != 0);
 }
 
-void update_all_record(password *registros, FILE *data)
+void update_all_record(password *registros, FILE *data, int len)
 {
-   printf("Actualizar todos los datos de un registro.\n");
+   short option, ID_temp, baton = 0;
+   password temp;
+
+   // Limpiamos pantalla
+   // clear();
+
+   lightBar(BarLen);
+   printf("¿Qué registro desea actualizar? (ID): ");
+   scanf("%hd", &ID_temp);
+   fflush(stdin);
+   lightBar(BarLen);
+
+   for (int flag = 0; flag < len; flag++)
+   {
+      if (ID_temp == registros[flag].ID)
+      {
+         temp = registros[flag];
+         baton = 1;
+         break;
+      }
+   }
+
+   if (baton == 0)
+   {
+      printf("Error de busqueda 1: update_all_record()\n");
+      Sleep(Wait);
+      // clear();
+      do
+      {
+         printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+         scanf("%hd", &option);
+         fflush(stdin);
+
+         switch (option)
+         {
+         case 0:
+            break;
+         case 1:
+            update_all_record(registros, data, len);
+            break;
+         default:
+            printf("Error de menú 1: find_record()\n");
+         }
+      } while (option != 0);
+   }
+   else
+   {
+      do
+      {
+         printf("Sitio: ");
+         gets(temp.sitio);
+
+         printf("Nombre de usuario: ");
+         gets(temp.usuario);
+
+         printf("Contraseña: ");
+         gets(temp.contenido);
+
+         Sleep(Wait);
+         // clear();
+
+         lightBar(BarLen);
+         printf("Sitio: %s\n", temp.sitio);
+
+         lightBar(BarLen);
+         printf("Nombre de usuario: %s\n", temp.usuario);
+
+         lightBar(BarLen);
+         printf("Contraseña: %s\n", temp.contenido);
+
+         lightBar(BarLen);
+         printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
+         scanf("%hd", &option);
+         fflush(stdin);
+         boldBar(BarLen);
+
+         switch (option)
+         {
+         case 0:
+            break;
+         case 1:
+            strcpy(registros[ID_temp].sitio, temp.sitio);
+            strcpy(registros[ID_temp].usuario, temp.usuario);
+            strcpy(registros[ID_temp].contenido, temp.contenido);
+            registros[ID_temp].token = rand() % 101;
+
+            save_data(registros, data, len); //
+            break;
+         default:
+            printf("Error de menú 1: update_all_record()\n");
+         }
+      } while (option != 1);
+   }
 }
 
-void update_gob_record(password *registros, FILE *data)
+void update_gob_record(password *registros, FILE *data, int len)
 {
    printf("Actualizar un dato de un registro.\n");
 }
@@ -567,21 +660,21 @@ void eliminar_registros_menu(password *registros, FILE *data)
       // Limpiamos pantalla
       // clear();
 
-      boldBar(40);
+      boldBar(BarLen);
       printf("MENÚ ELIMINAR REGISTROS\n");
 
-      lightBar(40);
+      lightBar(BarLen);
       printf("\t>> 1: Borrar un registro.\n"); // Borrado lógico
       printf("\t>> 2: Eliminar un registro.\n");
       printf("\t>> 3: Eliminar todos los registros.\n");
       printf("\n\t>> 0: Volver al menú principal.\n");
 
-      boldBar(40);
-      lightBar(40);
+      boldBar(BarLen);
+      lightBar(BarLen);
       printf("Opción: ");
       scanf("%hd", &option);
       fflush(stdin);
-      lightBar(40);
+      lightBar(BarLen);
 
       switch (option)
       {
@@ -619,6 +712,7 @@ void reportes_menu(password *registros, FILE *data)
 
 void init_data(password *registros, FILE *data, int *len)
 {
+   // data = fopen("C:/Users/%USERNAME%/ProyectoFinalData/data.bin", "rb");
    data = fopen(NOMBRE_ARCHIVO, "rb");
 
    if (data == NULL)
@@ -627,8 +721,8 @@ void init_data(password *registros, FILE *data, int *len)
       printf("Creando el archivo...\n");
       Sleep(Wait);
       data = fopen(NOMBRE_ARCHIVO, "wb");
-      fflush(data);
       fclose(data);
+      // system("type nul > C:\\Users\\%USERNAME%\\ProyectoFinalData\\data.bin");
       init_data(registros, data, len);
    }
    else
@@ -673,9 +767,36 @@ void save_data(password *registros, FILE *data, int len)
    }
 }
 
+// Esta mondá todavía no funciona
 void delete_data()
 {
-   printf("ELIMINAR TODOS LOS REGISTROS.\n");
+   char clave[] = "0000", temp[5];
+
+   boldBar(BarLen);
+   printf("ELIMINAR TODOS LOS REGISTROS\n");
+   boldBar(BarLen);
+
+   lightBar(BarLen);
+   printf("Clave de seguridad: ");
+   gets(temp);
+
+   Sleep(Wait);
+   // clear();
+
+   if (strcmp(clave, temp) == 0)
+   {
+      printf("Borrando archivo...\n");
+      Sleep(Wait);
+      system("del C:\\Users\\%USERNAME%\\ProyectoFinalData\\data.bin"); // Implementar variables de entorno para recolocar el fichero data.bin en Program Files del windows
+      Sleep(5000);
+      system("type nul > C:\\Users\\%USERNAME%\\ProyectoFinalData\\data.bin");
+      // fflush(stdout);
+   }
+   else
+   {
+      printf("Clave incorrecta.\n");
+      Sleep(Wait);
+   }
 }
 
 void boldBar(int length)

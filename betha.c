@@ -262,6 +262,7 @@ void find_record(password *registros, int len)
    } while (option != 0);
 }
 
+// Aún no pruebo esta función
 void filter_records(password *registros, int len)
 {
    short option;
@@ -607,6 +608,7 @@ void actualizar_registros_menu(password *registros, FILE *data, int len)
    } while (option != 0);
 }
 
+// Según yo, está terminada, pero aún no la pruebo
 void update_all_record(password *registros, FILE *data, int len)
 {
    short option, ID_temp, baton = 0;
@@ -704,6 +706,7 @@ void update_all_record(password *registros, FILE *data, int len)
    }
 }
 
+// Aún no trabajo en esta
 void update_gob_record(password *registros, FILE *data, int len)
 {
    printf("Actualizar un dato de un registro.\n");
@@ -747,16 +750,19 @@ void eliminar_registros_menu(password *registros, FILE *data)
    } while (option != 0);
 }
 
+// Aún no trabajo en esta
 void erase_record(password *registros, FILE *data)
 {
    printf("Borrado lógico de un registro.\n");
 }
 
+// Aún no trabajo en esta
 void delete_record(password *registros, FILE *data)
 {
    printf("Eliminación de un registro.\n");
 }
 
+// Aún no trabajo en esta
 void reportes_menu(password *registros, FILE *data)
 {
    printf("Reportes.\n");
@@ -885,13 +891,11 @@ void print_record(password input)
 
 void lists_title(const char *input)
 {
-   int length = BarLen;
-
-   boldBar(length);
+   boldBar(BarLen);
    printf("\t");
    printf("%s", input);
    printf("\n");
-   boldBar(length);
+   boldBar(BarLen);
 }
 
 short menu(const char **input)

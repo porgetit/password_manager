@@ -262,7 +262,9 @@ void find_record(password *registros, int len)
    } while (option != 0);
 }
 
-// Aún no pruebo esta función
+/*
+Tiene errores lógicos, se loopea al salir y luego de mostrar los registros encontrados. Encuentra bien los registros.
+*/
 void filter_records(password *registros, int len)
 {
    short option;
@@ -608,7 +610,6 @@ void actualizar_registros_menu(password *registros, FILE *data, int len)
    } while (option != 0);
 }
 
-// Según yo, está terminada, pero aún no la pruebo
 void update_all_record(password *registros, FILE *data, int len)
 {
    short option, ID_temp, baton = 0;

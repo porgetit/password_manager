@@ -85,7 +85,8 @@ int main(void)
                                "Actualizar registros",
                                "Eliminar registros",
                                "Reportes",
-                               "Salir del programa"};
+                               "Salir del programa",
+                               "\0"};
 
       option = menu(options);
 
@@ -132,7 +133,8 @@ void ver_registros_menu(password *registros, int len)
           "Listar todos los registros",
           "Buscar un registro",
           "Fitlrar registros",
-          "Volver al menú principal"};
+          "Volver al menú principal",
+          "\0"};
 
       option = menu(options);
 
@@ -273,7 +275,8 @@ void filter_records(password *registros, int len)
           "FILTROS",
           "Filtrar por sitio",
           "Filtrar por nombre",
-          "Volver"};
+          "Volver",
+          "\0"};
 
       option = menu(options);
 
@@ -406,7 +409,8 @@ void crear_registros_menu(password *registros, FILE *data, int *len)
           "MENÚ CREAR REGISTROS",
           "Creación manual",
           "Creación asistida",
-          "Volver al menú principal"};
+          "Volver al menú principal",
+          "\0"};
 
       option = menu(options);
 
@@ -582,7 +586,8 @@ void actualizar_registros_menu(password *registros, FILE *data, int len)
           "MENÚ ACTUALIZAR REGISTROS",
           "Actualizar todos los datos de un registro",
           "Actualizar un solo dato de un registro",
-          "Volver al menú principal"};
+          "Volver al menú principal",
+          "\0"};
 
       option = menu(options);
 
@@ -718,7 +723,8 @@ void eliminar_registros_menu(password *registros, FILE *data)
           "Borrar un registro",
           "Eliminar un registro",
           "Eliminar todos los registros",
-          "Volver al menú principal"};
+          "Volver al menú principal",
+          "\0"};
 
       option = menu(options);
 
@@ -879,10 +885,10 @@ void print_record(password input)
 
 void lists_title(const char *input)
 {
-   int length = sizeof(input) / sizeof(char);
+   int length = BarLen;
 
    boldBar(length);
-   printf("\n\t\t\t");
+   printf("\t");
    printf("%s", input);
    printf("\n");
    boldBar(length);
@@ -890,25 +896,13 @@ void lists_title(const char *input)
 
 short menu(const char **input)
 {
-   /*
-   boldBar(BarLen);
-   printf("MENÚ VER REGISTROS\n");
+   int length = 0;
 
-   lightBar(BarLen);
-   printf("\t>> 1: Listar todos los registros.\n");
-   printf("\t>> 2: Buscar un registro.\n");
-   printf("\t>> 3: Filtrar registros.\n");
-   printf("\n\t>> 0: Volver al menú principal.\n");
+   while (strcmp(input[length], "\0") != 0)
+   {
+      length++;
+   }
 
-   boldBar(BarLen);
-   lightBar(BarLen);
-   printf("Opción: ");
-   scanf("%hd", &option);
-   fflush(stdin);
-   lightBar(BarLen);
-   */
-
-   int length = sizeof(input) / sizeof(char) - 1;
    short option;
 
    boldBar(BarLen);

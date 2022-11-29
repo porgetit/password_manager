@@ -51,9 +51,9 @@ void update_all_record(password *, FILE *, int);
 void update_gob_record(password *, FILE *, int);
 
 //    Funciones de eliminación de datos
-void eliminar_registros_menu(password *, FILE *);
-void erase_record(password *, FILE *);
-void delete_record(password *, FILE *);
+void eliminar_registros_menu(password *, FILE *, int);
+void erase_record(password *, FILE *, int);
+void recover_record(password *, FILE *, int);
 
 /* FUNCIONES DE GENERACIÓN DE REPORTES */
 void reportes_menu(password *, FILE *);
@@ -83,8 +83,8 @@ int main(void)
                                "Ver registros",
                                "Crear registros",
                                "Actualizar registros",
-                               "Eliminar registros",
-                               "Reportes",
+                               "Eliminar o recuperar registros",
+                               //  "Reportes",
                                "Salir del programa",
                                "\0"};
 
@@ -107,11 +107,11 @@ int main(void)
          actualizar_registros_menu(registros, data, len);
          break;
       case 4:
-         eliminar_registros_menu(registros, data);
+         eliminar_registros_menu(registros, data, len);
          break;
-      case 5:
-         reportes_menu(registros, data);
-         break;
+      // case 5:
+      //    reportes_menu(registros, data);
+      //    break;
       default:
          printf("Error de menú 1: main()\n");
       }
@@ -132,7 +132,7 @@ void ver_registros_menu(password *registros, int len)
           "MENÚ VER REGISTROS",
           "Listar todos los registros",
           "Buscar un registro",
-          "Fitlrar registros",
+          "Filtrar registros",
           "Volver al menú principal",
           "\0"};
 
@@ -167,9 +167,12 @@ void all_records(password *registros, int len)
    lists_title("LISTADO DE REGISTROS");
    for (int flag = 0; flag < len; flag++)
    {
-      print_record(registros[flag]);
-      lightBar(BarLen);
-      printf("\n");
+      if (registros[flag].visibilidad == 1)
+      {
+         print_record(registros[flag]);
+         lightBar(BarLen);
+         printf("\n");
+      }
    }
    boldBar(BarLen);
 
@@ -205,9 +208,11 @@ void find_record(password *registros, int len)
 
       for (int flag = 0; flag < len; flag++)
       {
-         if (ID_temp == registros[flag].ID)
+         if (ID_temp == registros[flag].ID && registros[flag].visibilidad == 1)
          {
+            lightBar(BarLen);
             print_record(registros[flag]);
+            lightBar(BarLen);
             baton = 1;
             break;
          }
@@ -251,7 +256,7 @@ void find_record(password *registros, int len)
       case 0:
          break;
       case 1:
-         printf("Exportando...\n"); // Aquí es donde entran las funciones de reportes
+         printf("Exportando...\n");
          Sleep(Wait);
          option = 0;
          break;
@@ -262,9 +267,6 @@ void find_record(password *registros, int len)
    } while (option != 0);
 }
 
-/*
-Tiene errores lógicos, se loopea al salir y luego de mostrar los registros encontrados. Encuentra bien los registros.
-*/
 void filter_records(password *registros, int len)
 {
    short option;
@@ -299,7 +301,7 @@ void filter_records(password *registros, int len)
             password registros_tmp[Len];
             int index = 0;
 
-            printf("¿Qué sitio desea filtrar?: \n");
+            printf("¿Qué sitio desea filtrar?: ");
             gets(input);
 
             for (int flag = 0; flag < len; flag++)
@@ -314,29 +316,37 @@ void filter_records(password *registros, int len)
             if (index == 0)
             {
                printf("Error de busqueda 2: filter_records()\n");
-               do
-               {
-                  printf("¿Desea aplicar otro filtro? (Si -> 1 | No -> 0): ");
-                  scanf("%hd", &option);
+               printf("¿Desea aplicar otro filtro? (Si -> 1 | No -> 0): ");
+               scanf("%hd", &option);
 
-                  switch (option)
-                  {
-                  case 0:
-                     break;
-                  case 1:
-                     break;
-                  default:
-                     printf("Error de menú 1: filter_records()\n");
-                  }
-               } while (option != 0 || option != 1);
+               switch (option)
+               {
+               case 0:
+                  break;
+               case 1:
+                  break;
+               default:
+                  printf("Error de menú 1: filter_records()\n");
+               }
+
+               if (option == 0)
+               {
+                  break;
+               }
             }
             else
             {
                lists_title("REGISTROS ENCONTRADOS");
                for (int flag = 0; flag < index; flag++)
                {
-                  print_record(registros_tmp[flag]);
+                  if (registros_tmp[flag].visibilidad == 1)
+                  {
+                     print_record(registros_tmp[flag]);
+                     lightBar(BarLen);
+                     printf("\n");
+                  }
                }
+               option = 0;
             }
          } while (option != 0);
          break;
@@ -352,7 +362,7 @@ void filter_records(password *registros, int len)
             password registros_tmp[Len];
             int index = 0;
 
-            printf("¿Qué usuario desea filtrar?: \n");
+            printf("¿Qué usuario desea filtrar?: ");
             gets(input);
 
             for (int flag = 0; flag < len; flag++)
@@ -389,6 +399,8 @@ void filter_records(password *registros, int len)
                for (int flag = 0; flag < index; flag++)
                {
                   print_record(registros_tmp[flag]);
+                  lightBar(BarLen);
+                  printf("\n");
                }
             }
          } while (option != 0);
@@ -588,7 +600,7 @@ void actualizar_registros_menu(password *registros, FILE *data, int len)
       const char *options[] = {
           "MENÚ ACTUALIZAR REGISTROS",
           "Actualizar todos los datos de un registro",
-          "Actualizar un solo dato de un registro",
+          //  "Actualizar un solo dato de un registro",
           "Volver al menú principal",
           "\0"};
 
@@ -601,9 +613,9 @@ void actualizar_registros_menu(password *registros, FILE *data, int len)
       case 1:
          update_all_record(registros, data, len);
          break;
-      case 2:
-         update_gob_record(registros, data, len);
-         break;
+      // case 2:
+      //    update_gob_record(registros, data, len);
+      //    break;
       default:
          printf("Error de menú 1: actualizar_registros_menu()\n");
       }
@@ -626,7 +638,7 @@ void update_all_record(password *registros, FILE *data, int len)
 
    for (int flag = 0; flag < len; flag++)
    {
-      if (ID_temp == registros[flag].ID)
+      if (ID_temp == registros[flag].ID && registros[flag].visibilidad == 1)
       {
          temp = registros[flag];
          baton = 1;
@@ -653,7 +665,7 @@ void update_all_record(password *registros, FILE *data, int len)
             update_all_record(registros, data, len);
             break;
          default:
-            printf("Error de menú 1: find_record()\n");
+            printf("Error de menú 1: update_all_record()\n");
          }
       } while (option != 0);
    }
@@ -707,13 +719,13 @@ void update_all_record(password *registros, FILE *data, int len)
    }
 }
 
-// Aún no trabajo en esta
+// Aún no trabajo en esta. Dejar como opcional
 void update_gob_record(password *registros, FILE *data, int len)
 {
    printf("Actualizar un dato de un registro.\n");
 }
 
-void eliminar_registros_menu(password *registros, FILE *data)
+void eliminar_registros_menu(password *registros, FILE *data, int len)
 {
    short option;
 
@@ -725,8 +737,8 @@ void eliminar_registros_menu(password *registros, FILE *data)
       const char *options[] = {
           "MENÚ ELIMINAR REGISTROS",
           "Borrar un registro",
-          "Eliminar un registro",
-          "Eliminar todos los registros",
+          "Recuperar un registro",
+          //  "Eliminar todos los registros",
           "Volver al menú principal",
           "\0"};
 
@@ -737,30 +749,161 @@ void eliminar_registros_menu(password *registros, FILE *data)
       case 0:
          break;
       case 1:
-         erase_record(registros, data);
+         erase_record(registros, data, len);
          break;
       case 2:
-         delete_record(registros, data);
+         recover_record(registros, data, len);
          break;
-      case 3:
-         delete_data();
-         break;
+      // case 3:
+      //    delete_data();
+      //    break;
       default:
          printf("Error de menú 1: eliminar_registros_menu()\n");
       }
    } while (option != 0);
 }
 
-// Aún no trabajo en esta
-void erase_record(password *registros, FILE *data)
+void erase_record(password *registros, FILE *data, int len)
 {
-   printf("Borrado lógico de un registro.\n");
+   short option, ID_temp, baton = 0;
+   password temp;
+
+   // Limpiamos pantalla
+   // clear();
+
+   lightBar(BarLen);
+   printf("¿Qué registro desea eliminar? (ID): ");
+   scanf("%hd", &ID_temp);
+   fflush(stdin);
+   lightBar(BarLen);
+
+   for (int flag = 0; flag < len; flag++)
+   {
+      if (ID_temp == registros[flag].ID && registros[flag].visibilidad == 1)
+      {
+         temp = registros[flag];
+         baton = 1;
+         break;
+      }
+   }
+
+   if (baton == 0)
+   {
+      printf("Error de busqueda 1: erase_record()\n");
+      Sleep(Wait);
+      // clear();
+      do
+      {
+         printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+         scanf("%hd", &option);
+         fflush(stdin);
+
+         switch (option)
+         {
+         case 0:
+            break;
+         case 1:
+            erase_record(registros, data, len);
+            break;
+         default:
+            printf("Error de menú 1: erase_record()\n");
+         }
+      } while (option != 0);
+   }
+   else
+   {
+      temp.visibilidad = 0;
+
+      Sleep(Wait);
+      // clear();
+
+      registros[ID_temp].visibilidad = temp.visibilidad;
+      printf("Registros eliminado.\n");
+      save_data(registros, data, len); //
+   }
 }
 
-// Aún no trabajo en esta
-void delete_record(password *registros, FILE *data)
+// Aquí hay algo raro, no estoy seguro de qué, pero funca raro. Pero... funca.
+void recover_record(password *registros, FILE *data, int len)
 {
-   printf("Eliminación de un registro.\n");
+   short option, ID_temp, baton = 0;
+   password temp;
+
+   // Limpiamos pantalla
+   // clear();
+
+   lists_title("LISTADO DE REGISTROS ELIMINADOS");
+   for (int flag = 0; flag < len; flag++)
+   {
+      if (registros[flag].visibilidad == 0)
+      {
+         print_record(registros[flag]);
+         lightBar(BarLen);
+         printf("\n");
+         baton++;
+      }
+   }
+   boldBar(BarLen);
+
+   if (baton != 0)
+   {
+      baton = 0;
+      lightBar(BarLen);
+      printf("¿Qué registro desea recuperar? (ID): ");
+      scanf("%hd", &ID_temp);
+      fflush(stdin);
+      lightBar(BarLen);
+
+      for (int flag = 0; flag < len; flag++)
+      {
+         if (ID_temp == registros[flag].ID && registros[flag].visibilidad == 0)
+         {
+            temp = registros[flag];
+            baton++;
+            break;
+         }
+      }
+
+      if (baton == 0)
+      {
+         printf("Error de busqueda 1: recover_record()\n");
+         Sleep(Wait);
+         // clear();
+         do
+         {
+            printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+            scanf("%hd", &option);
+            fflush(stdin);
+
+            switch (option)
+            {
+            case 0:
+               break;
+            case 1:
+               recover_record(registros, data, len);
+               break;
+            default:
+               printf("Error de menú 1: recover_record()\n");
+            }
+         } while (option != 0);
+      }
+      else
+      {
+         temp.visibilidad = 1;
+
+         Sleep(Wait);
+         // clear();
+
+         registros[ID_temp].visibilidad = temp.visibilidad;
+         printf("Registros recuperado.\n");
+         save_data(registros, data, len); //
+      }
+   }
+   else
+   {
+      printf("Error de busqueda 2: recover_record()\n");
+      Sleep(Wait);
+   }
 }
 
 // Aún no trabajo en esta

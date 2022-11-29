@@ -60,8 +60,16 @@ void reportes_menu(password *, FILE *);
 
 int main(void)
 {
+   // Establecer el idioma a español
+   setlocale(LC_ALL, "spanish"); // Cambiar locale - Suficiente para máquinas Linux
+   // SetConsoleCP(850);            // Cambiar STDIN -  Para máquinas Windows
+   // SetConsoleOutputCP(850);      // Cambiar STDOUT - Para máquinas Windows
+
+   /* Nota:
+   Para el futuro, en las líneas anteriores (65 y 66) se cambia la página de códigos que usa el programa para codificar los caracteres que se envían a consola y se reciben de consola. Por ahora, no es posible simplemente cambiar los valores para que E/L funcionen correctamente, en mi caso particular. Puedo hacer un script que haga fuerza bruta y me muestre los resultados para saber cual es el número que debo poner en ese par de funciones.
+   */
+
    // Establecemos parámetros globales
-   setlocale(LC_ALL, "");
    srand(time(NULL));
 
    // Inicializamos los punteros, estructuras y variables

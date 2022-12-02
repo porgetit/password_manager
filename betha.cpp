@@ -14,12 +14,12 @@ typedef struct
    int ID;
    char sitio[1024];
    char usuario[256];
-   char contenido[1024]; // contraseÃ±a
+   char contenido[1024]; // contraseña
    int token;
    short visibilidad;
 } password;
 
-/* FUNCIONES ESTÃ‰TICAS */
+/* FUNCIONES ESTÁTICAS */
 void bar(const char *, int);
 void boldBar(int);
 void lightBar(int);
@@ -28,48 +28,44 @@ void print_record(password);
 void lists_title(const char *);
 short menu(const char **);
 
-/* FUNCIONES DE MANIPULACIÃ“N DE DATOS EN DISCO */
+/* FUNCIONES DE MANIPULACIÓN DE DATOS EN DISCO */
 void init_data(password *, FILE *, int *);
 void save_data(password *, FILE *, int);
-void delete_data();
+void delete_data(password *, FILE *, int *);
 
-/* FUNCIONES DE MANIPULACIÃ“N DE DATOS EN MEMORIA */
-//    Funciones de impresiÃ³n de datos
+/* FUNCIONES DE MANIPULACIÓN DE DATOS EN MEMORIA */
+//    Funciones de impresión de datos
 void ver_registros_menu(password *, int);
 void all_records(password *, int);
 void find_record(password *, int);
 void filter_records(password *, int);
 
-//    Funciones de creaciÃ³n de datos
+//    Funciones de creación de datos
 void crear_registros_menu(password *, FILE *, int *);
 void create_record(password *, FILE *, short, int *);
 void rand_strings(char *, int);
 
-//    Funciones de actualizaciÃ³n de datos
+//    Funciones de actualización de datos
 void actualizar_registros_menu(password *, FILE *, int);
 void update_all_record(password *, FILE *, int);
 void update_gob_record(password *, FILE *, int);
 
-//    Funciones de eliminaciÃ³n de datos
-void eliminar_registros_menu(password *, FILE *, int);
+//    Funciones de eliminación de datos
+void eliminar_registros_menu(password *, FILE *, int *);
 void erase_record(password *, FILE *, int);
 void recover_record(password *, FILE *, int);
 
-/* FUNCIONES DE GENERACIÃ“N DE REPORTES */
+/* FUNCIONES DE GENERACIÓN DE REPORTES */
 void reportes_menu(password *, FILE *);
+void exportar(password *, int);
 
 int main(void)
 {
-   // Establecer el idioma a espaÃ±ol
-   setlocale(LC_ALL, "spanish"); // Cambiar locale - Suficiente para mÃ¡quinas Linux
-   // SetConsoleCP(850);            // Cambiar STDIN -  Para mÃ¡quinas Windows
-   // SetConsoleOutputCP(850);      // Cambiar STDOUT - Para mÃ¡quinas Windows
+   // Establecer el idioma a español
+   setlocale(LC_ALL, "spanish");
 
-   /* Nota:
-   Para el futuro, en las lÃ­neas anteriores (65 y 66) se cambia la pÃ¡gina de cÃ³digos que usa el programa para codificar los caracteres que se envÃ­an a consola y se reciben de consola. Por ahora, no es posible simplemente cambiar los valores para que E/L funcionen correctamente, en mi caso particular. Puedo hacer un script que haga fuerza bruta y me muestre los resultados para saber cual es el nÃºmero que debo poner en ese par de funciones.
-   */
 
-   // Establecemos parÃ¡metros globales
+   // Establecemos parámetros globales
    srand(time(NULL));
 
    // Inicializamos los punteros, estructuras y variables
@@ -80,14 +76,14 @@ int main(void)
    // Inicializamos el vector de registros
    init_data(registros, data, &len);
 
-   // Menu de usuario
+   // Menú de usuario
    short option;
    do
    {
       // Limpiamos pantalla
-      // clear();
+      clear();
 
-      const char *options[] = {"MENÃš PRINCIPAL",
+      const char *options[] = {"MENÚ PRINCIPAL",
                                "Ver registros",
                                "Crear registros",
                                "Actualizar registros",
@@ -101,7 +97,7 @@ int main(void)
       switch (option)
       {
       case 0:
-         // clear();
+         clear();
          printf("Saliendo...\n");
          Sleep(Wait);
          break;
@@ -115,13 +111,13 @@ int main(void)
          actualizar_registros_menu(registros, data, len);
          break;
       case 4:
-         eliminar_registros_menu(registros, data, len);
+         eliminar_registros_menu(registros, data, &len);
          break;
       // case 5:
       //    reportes_menu(registros, data);
       //    break;
       default:
-         printf("Error de menÃº 1: main()\n");
+         printf("Error de menú 1: main()\n");
       }
 
    } while (option != 0);
@@ -134,16 +130,17 @@ void ver_registros_menu(password *registros, int len)
    do
    {
       // Limpiamos pantalla
-      // clear();
+      clear();
 
       const char *options[] = {
-          "MENÃš VER REGISTROS",
+          "MENÚ VER REGISTROS",
           "Listar todos los registros",
           "Buscar un registro",
           "Filtrar registros",
-          "Volver al menÃº principal",
+          "Volver al menú principal",
           "\0"};
 
+      fflush(stdin);
       option = menu(options);
 
       switch (option)
@@ -160,7 +157,7 @@ void ver_registros_menu(password *registros, int len)
          filter_records(registros, len); // Agregar: si no hay regristros, mostrar mensaje "SIN REGISTROS"
          break;
       default:
-         printf("Error de menÃº 1: ver_registros_menu()\n");
+         printf("Error de menú 1: ver_registros_menu()\n");
       }
    } while (option != 0);
 }
@@ -168,9 +165,9 @@ void ver_registros_menu(password *registros, int len)
 void all_records(password *registros, int len)
 {
    // Limpiamos pantalla
-   // clear();
-
+   clear();
    short option;
+   password output[len];
 
    lists_title("LISTADO DE REGISTROS");
    for (int flag = 0; flag < len; flag++)
@@ -178,13 +175,14 @@ void all_records(password *registros, int len)
       if (registros[flag].visibilidad == 1)
       {
          print_record(registros[flag]);
+         output[flag] = registros[flag];
          lightBar(BarLen);
          printf("\n");
       }
    }
    boldBar(BarLen);
 
-   printf("\nÂ¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0):");
+   printf("\n¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0):");
    scanf("%hd", &option);
    fflush(stdin);
 
@@ -193,24 +191,26 @@ void all_records(password *registros, int len)
    case 0:
       break;
    case 1:
-      printf("Exportando...\n"); // AquÃ­ es donde entran las funciones de reportes
+      printf("Exportando...\n"); // Aqui es donde entran las funciones de reportes
       Sleep(Wait);
+      exportar(output, len);
       break;
    default:
-      printf("Error de menÃº 1: all_records()\n");
+      printf("Error de menú 1: all_records()\n");
    }
 }
 
 void find_record(password *registros, int len)
 {
    // Limpiamos pantalla
-   // clear();
+   clear();
 
    short option, ID_temp, baton = 0;
+   password output[1];
 
    do
    {
-      printf("Â¿QuÃ© registro desea ver? (ID): ");
+      printf("¿Qué registro desea ver? (ID): ");
       scanf("%hd", &ID_temp);
       fflush(stdin);
 
@@ -221,6 +221,7 @@ void find_record(password *registros, int len)
             lightBar(BarLen);
             print_record(registros[flag]);
             lightBar(BarLen);
+            output[0] = registros[flag];
             baton = 1;
             break;
          }
@@ -230,10 +231,10 @@ void find_record(password *registros, int len)
       {
          printf("Error de busqueda 1: find_record()\n");
          Sleep(Wait);
-         // clear();
+         clear();
          do
          {
-            printf("Â¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+            printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
             scanf("%hd", &option);
             fflush(stdin);
 
@@ -245,7 +246,7 @@ void find_record(password *registros, int len)
                find_record(registros, len);
                break;
             default:
-               printf("Error de menÃº 1: find_record()\n");
+               printf("Error de menú 1: find_record()\n");
             }
          } while (option != 0);
 
@@ -255,7 +256,7 @@ void find_record(password *registros, int len)
          }
       }
 
-      printf("\nÂ¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0): ");
+      printf("\n¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0): ");
       scanf("%hd", &option);
       fflush(stdin);
 
@@ -266,10 +267,11 @@ void find_record(password *registros, int len)
       case 1:
          printf("Exportando...\n");
          Sleep(Wait);
+         exportar(output, 1);
          option = 0;
          break;
       default:
-         printf("Error de menÃº 1: find_record()\n");
+         printf("Error de menú 1: find_record()\n");
       }
 
    } while (option != 0);
@@ -278,11 +280,11 @@ void find_record(password *registros, int len)
 void filter_records(password *registros, int len)
 {
    short option;
-
+   password output[Len];
    do
    {
       // Limpiamos pantalla
-      // clear();
+      clear();
 
       const char *options[] = {
           "FILTROS",
@@ -299,7 +301,7 @@ void filter_records(password *registros, int len)
          break;
       case 1:
          // Limpiamos pantalla
-         // clear();
+         clear();
 
          short option;
 
@@ -309,12 +311,12 @@ void filter_records(password *registros, int len)
             password registros_tmp[Len];
             int index = 0;
 
-            printf("Â¿QuÃ© sitio desea filtrar?: ");
+            printf("¿Qué sitio desea filtrar?: ");
             gets(input);
 
             for (int flag = 0; flag < len; flag++)
             {
-               if (strcmp(input, registros[flag].sitio) == 0)
+               if (strcmp(input, registros[flag].sitio) == 0 && registros[flag].visibilidad == 1)
                {
                   registros_tmp[index] = registros[flag];
                   index++;
@@ -324,7 +326,7 @@ void filter_records(password *registros, int len)
             if (index == 0)
             {
                printf("Error de busqueda 2: filter_records()\n");
-               printf("Â¿Desea aplicar otro filtro? (Si -> 1 | No -> 0): ");
+               printf("¿Desea aplicar otro filtro? (Si -> 1 | No -> 0): ");
                scanf("%hd", &option);
 
                switch (option)
@@ -334,7 +336,7 @@ void filter_records(password *registros, int len)
                case 1:
                   break;
                default:
-                  printf("Error de menÃº 1: filter_records()\n");
+                  printf("Error de menú 1: filter_records()\n");
                }
 
                if (option == 0)
@@ -350,17 +352,40 @@ void filter_records(password *registros, int len)
                   if (registros_tmp[flag].visibilidad == 1)
                   {
                      print_record(registros_tmp[flag]);
+                     output[flag] = registros_tmp[flag];
                      lightBar(BarLen);
                      printf("\n");
                   }
                }
                option = 0;
             }
+
+            do
+            {
+               printf("\n¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0): ");
+               scanf("%hd", &option);
+               fflush(stdin);
+
+               switch (option)
+               {
+               case 0:
+                  break;
+               case 1:
+                  printf("Exportando...\n");
+                  Sleep(Wait);
+                  exportar(output, len);
+                  option = 0;
+                  break;
+               default:
+                  printf("Error de menú 1: find_record()\n");
+               }
+            } while (option != 0);
+
          } while (option != 0);
          break;
       case 2:
          // Limpiamos pantalla
-         // clear();
+         clear();
 
          option = 0;
 
@@ -370,12 +395,12 @@ void filter_records(password *registros, int len)
             password registros_tmp[Len];
             int index = 0;
 
-            printf("Â¿QuÃ© usuario desea filtrar?: ");
+            printf("¿Qué usuario desea filtrar?: ");
             gets(input);
 
             for (int flag = 0; flag < len; flag++)
             {
-               if (strcmp(input, registros[flag].usuario) == 0)
+               if (strcmp(input, registros[flag].usuario) == 0 && registros[flag].visibilidad == 1)
                {
                   registros_tmp[index] = registros[flag];
                   index++;
@@ -387,7 +412,7 @@ void filter_records(password *registros, int len)
                printf("Error de busqueda 2: filter_records()\n");
                do
                {
-                  printf("Â¿Desea aplicar otro filtro? (Si -> 1 | No -> 0): ");
+                  printf("¿Desea aplicar otro filtro? (Si -> 1 | No -> 0): ");
                   scanf("%hd", &option);
 
                   switch (option)
@@ -397,7 +422,7 @@ void filter_records(password *registros, int len)
                   case 1:
                      break;
                   default:
-                     printf("Error de menÃº 1: filter_records()\n");
+                     printf("Error de menú 1: filter_records()\n");
                   }
                } while (option != 0 || option != 1);
             }
@@ -407,14 +432,37 @@ void filter_records(password *registros, int len)
                for (int flag = 0; flag < index; flag++)
                {
                   print_record(registros_tmp[flag]);
+                  output[flag] = registros_tmp[flag];
                   lightBar(BarLen);
                   printf("\n");
                }
             }
+
+            do
+            {
+               printf("\n¿Desea exportar este reporte en PDF? (Si -> 1 / No -> 0): ");
+               scanf("%hd", &option);
+               fflush(stdin);
+
+               switch (option)
+               {
+               case 0:
+                  break;
+               case 1:
+                  printf("Exportando...\n");
+                  Sleep(Wait);
+                  exportar(output, len);
+                  option = 0;
+                  break;
+               default:
+                  printf("Error de menú 1: find_record()\n");
+               }
+            } while (option != 0);
+
          } while (option != 0);
          break;
       default:
-         printf("Error de menÃº 1: filter_records()\n");
+         printf("Error de menú 1: filter_records()\n");
       }
    } while (option != 0);
 }
@@ -426,13 +474,13 @@ void crear_registros_menu(password *registros, FILE *data, int *len)
    do
    {
       // Limpiamos pantalla
-      // clear();
+      clear();
 
       const char *options[] = {
-          "MENÃš CREAR REGISTROS",
-          "CreaciÃ³n manual",
-          "CreaciÃ³n asistida",
-          "Volver al menÃº principal",
+          "MENÚ CREAR REGISTROS",
+          "Creación manual",
+          "Creación asistida",
+          "Volver al menú principal",
           "\0"};
 
       option = menu(options);
@@ -448,7 +496,7 @@ void crear_registros_menu(password *registros, FILE *data, int *len)
          create_record(registros, data, 1, len); //
          break;
       default:
-         printf("Error de menÃº 1: crear_registros_menu()\n");
+         printf("Error de menú 1: crear_registros_menu()\n");
       }
    } while (option != 0);
 }
@@ -459,15 +507,15 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
    password temp;
 
    // Limpiamos pantalla
-   // clear();
+   clear();
 
    if (automatic == 0)
    {
-      // CreaciÃ³n manual
+      // Creación manual
       do
       {
          boldBar(BarLen);
-         printf("CREACIÃ“N MANUAL DE REGISTRO\n");
+         printf("CREACIÓN MANUAL DE REGISTRO\n");
          boldBar(BarLen);
          lightBar(BarLen);
 
@@ -477,11 +525,11 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          printf("Nombre de usuario: ");
          gets(temp.usuario);
 
-         printf("ContraseÃ±a: ");
+         printf("Contraseña: ");
          gets(temp.contenido);
 
          Sleep(Wait);
-         // clear();
+         clear();
 
          lightBar(BarLen);
          printf("Sitio: %s\n", temp.sitio);
@@ -490,10 +538,10 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          printf("Nombre de usuario: %s\n", temp.usuario);
 
          lightBar(BarLen);
-         printf("ContraseÃ±a: %s\n", temp.contenido);
+         printf("Contraseña: %s\n", temp.contenido);
 
          lightBar(BarLen);
-         printf("Â¿Son correctos los datos? (Si -> 1 | No -> 0): ");
+         printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
          boldBar(BarLen);
@@ -514,7 +562,7 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
             save_data(registros, data, *len); //
             break;
          default:
-            printf("Error de menÃº 1: create_record()\n");
+            printf("Error de menú 1: create_record()\n");
          }
       } while (option != 1);
    }
@@ -522,29 +570,29 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
    {
       int lenNombre, lenPass;
 
-      // CreaciÃ³n asistida
+      // Creación asistida
       do
       {
          boldBar(BarLen);
-         printf("CREACIÃ“N ASISTIDA DE REGISTRO\n");
+         printf("CREACIÓN ASISTIDA DE REGISTRO\n");
          boldBar(BarLen);
          lightBar(BarLen);
 
          printf("Sitio: ");
          gets(temp.sitio);
 
-         printf("Largo del nombre de usuario (mÃ¡ximo 255): ");
+         printf("Largo del nombre de usuario (máximo 255): ");
          scanf("%d", &lenNombre);
          fflush(stdin);
          rand_strings(temp.usuario, lenNombre);
 
-         printf("Largo de la contraseÃ±a (mÃ¡ximo 1000): ");
+         printf("Largo de la contraseña (máximo 1000): ");
          scanf("%d", &lenPass);
          fflush(stdin);
          rand_strings(temp.contenido, lenPass);
 
          Sleep(Wait);
-         // clear();
+         clear();
 
          lightBar(BarLen);
          printf("Sitio: %s\n", temp.sitio);
@@ -552,10 +600,10 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
          lightBar(BarLen);
          printf("Nombre de usuario: %s\n", temp.usuario);
          lightBar(BarLen);
-         printf("ContraseÃ±a: %s\n", temp.contenido);
+         printf("Contraseña: %s\n", temp.contenido);
 
          lightBar(BarLen);
-         printf("Â¿Son correctos los datos? (Si -> 1 | No -> 0): ");
+         printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
 
@@ -575,13 +623,13 @@ void create_record(password *registros, FILE *data, short automatic, int *len)
             save_data(registros, data, *len); //
             break;
          default:
-            printf("Error de menÃº 1: create_record()\n");
+            printf("Error de menú 1: create_record()\n");
          }
       } while (option != 1);
    }
    else
    {
-      printf("Error de creaciÃ³n 1: create_record()\n");
+      printf("Error de creación 1: create_record()\n");
    }
 }
 
@@ -603,13 +651,13 @@ void actualizar_registros_menu(password *registros, FILE *data, int len)
    do
    {
       // Limpiamos pantalla
-      // clear();
+      clear();
 
       const char *options[] = {
-          "MENÃš ACTUALIZAR REGISTROS",
+          "MENÚ ACTUALIZAR REGISTROS",
           "Actualizar todos los datos de un registro",
           //  "Actualizar un solo dato de un registro",
-          "Volver al menÃº principal",
+          "Volver al menú principal",
           "\0"};
 
       option = menu(options);
@@ -625,7 +673,7 @@ void actualizar_registros_menu(password *registros, FILE *data, int len)
       //    update_gob_record(registros, data, len);
       //    break;
       default:
-         printf("Error de menÃº 1: actualizar_registros_menu()\n");
+         printf("Error de menú 1: actualizar_registros_menu()\n");
       }
    } while (option != 0);
 }
@@ -636,10 +684,10 @@ void update_all_record(password *registros, FILE *data, int len)
    password temp;
 
    // Limpiamos pantalla
-   // clear();
+   clear();
 
    lightBar(BarLen);
-   printf("Â¿QuÃ© registro desea actualizar? (ID): ");
+   printf("¿Qué registro desea actualizar? (ID): ");
    scanf("%hd", &ID_temp);
    fflush(stdin);
    lightBar(BarLen);
@@ -658,10 +706,10 @@ void update_all_record(password *registros, FILE *data, int len)
    {
       printf("Error de busqueda 1: update_all_record()\n");
       Sleep(Wait);
-      // clear();
+      clear();
       do
       {
-         printf("Â¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+         printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
 
@@ -673,7 +721,7 @@ void update_all_record(password *registros, FILE *data, int len)
             update_all_record(registros, data, len);
             break;
          default:
-            printf("Error de menÃº 1: update_all_record()\n");
+            printf("Error de menú 1: update_all_record()\n");
          }
       } while (option != 0);
    }
@@ -687,11 +735,11 @@ void update_all_record(password *registros, FILE *data, int len)
          printf("Nombre de usuario: ");
          gets(temp.usuario);
 
-         printf("ContraseÃ±a: ");
+         printf("Contraseña: ");
          gets(temp.contenido);
 
          Sleep(Wait);
-         // clear();
+         clear();
 
          lightBar(BarLen);
          printf("Sitio: %s\n", temp.sitio);
@@ -700,10 +748,10 @@ void update_all_record(password *registros, FILE *data, int len)
          printf("Nombre de usuario: %s\n", temp.usuario);
 
          lightBar(BarLen);
-         printf("ContraseÃ±a: %s\n", temp.contenido);
+         printf("Contraseña: %s\n", temp.contenido);
 
          lightBar(BarLen);
-         printf("Â¿Son correctos los datos? (Si -> 1 | No -> 0): ");
+         printf("¿Son correctos los datos? (Si -> 1 | No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
          boldBar(BarLen);
@@ -721,33 +769,33 @@ void update_all_record(password *registros, FILE *data, int len)
             save_data(registros, data, len); //
             break;
          default:
-            printf("Error de menÃº 1: update_all_record()\n");
+            printf("Error de menú 1: update_all_record()\n");
          }
       } while (option != 1);
    }
 }
 
-// AÃºn no trabajo en esta. Dejar como opcional
+// Aún no trabajo en esta. Dejar como opcional
 void update_gob_record(password *registros, FILE *data, int len)
 {
    printf("Actualizar un dato de un registro.\n");
 }
 
-void eliminar_registros_menu(password *registros, FILE *data, int len)
+void eliminar_registros_menu(password *registros, FILE *data, int *len)
 {
    short option;
 
    do
    {
       // Limpiamos pantalla
-      // clear();
+      clear();
 
       const char *options[] = {
-          "MENÃš ELIMINAR REGISTROS",
+          "MENÚ ELIMINAR REGISTROS",
           "Borrar un registro",
           "Recuperar un registro",
-          //  "Eliminar todos los registros",
-          "Volver al menÃº principal",
+          "Eliminar todos los registros",
+          "Volver al menú principal",
           "\0"};
 
       option = menu(options);
@@ -757,16 +805,16 @@ void eliminar_registros_menu(password *registros, FILE *data, int len)
       case 0:
          break;
       case 1:
-         erase_record(registros, data, len);
+         erase_record(registros, data, *len);
          break;
       case 2:
-         recover_record(registros, data, len);
+         recover_record(registros, data, *len);
          break;
-      // case 3:
-      //    delete_data();
-      //    break;
+      case 3:
+         delete_data(registros, data, len);
+         break;
       default:
-         printf("Error de menÃº 1: eliminar_registros_menu()\n");
+         printf("Error de menú 1: eliminar_registros_menu()\n");
       }
    } while (option != 0);
 }
@@ -777,10 +825,10 @@ void erase_record(password *registros, FILE *data, int len)
    password temp;
 
    // Limpiamos pantalla
-   // clear();
+   clear();
 
    lightBar(BarLen);
-   printf("Â¿QuÃ© registro desea eliminar? (ID): ");
+   printf("¿Qué registro desea eliminar? (ID): ");
    scanf("%hd", &ID_temp);
    fflush(stdin);
    lightBar(BarLen);
@@ -799,10 +847,10 @@ void erase_record(password *registros, FILE *data, int len)
    {
       printf("Error de busqueda 1: erase_record()\n");
       Sleep(Wait);
-      // clear();
+      clear();
       do
       {
-         printf("Â¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+         printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
          scanf("%hd", &option);
          fflush(stdin);
 
@@ -814,7 +862,7 @@ void erase_record(password *registros, FILE *data, int len)
             erase_record(registros, data, len);
             break;
          default:
-            printf("Error de menÃº 1: erase_record()\n");
+            printf("Error de menú 1: erase_record()\n");
          }
       } while (option != 0);
    }
@@ -823,22 +871,22 @@ void erase_record(password *registros, FILE *data, int len)
       temp.visibilidad = 0;
 
       Sleep(Wait);
-      // clear();
+      clear();
 
       registros[ID_temp].visibilidad = temp.visibilidad;
-      printf("Registros eliminado.\n");
+      printf("Registro eliminado.\n");
       save_data(registros, data, len); //
+      Sleep(Wait);
    }
 }
 
-// AquÃ­ hay algo raro, no estoy seguro de quÃ©, pero funca raro. Pero... funca.
 void recover_record(password *registros, FILE *data, int len)
 {
    short option, ID_temp, baton = 0;
    password temp;
 
    // Limpiamos pantalla
-   // clear();
+   clear();
 
    lists_title("LISTADO DE REGISTROS ELIMINADOS");
    for (int flag = 0; flag < len; flag++)
@@ -857,7 +905,7 @@ void recover_record(password *registros, FILE *data, int len)
    {
       baton = 0;
       lightBar(BarLen);
-      printf("Â¿QuÃ© registro desea recuperar? (ID): ");
+      printf("¿Qué registro desea recuperar? (ID): ");
       scanf("%hd", &ID_temp);
       fflush(stdin);
       lightBar(BarLen);
@@ -876,10 +924,10 @@ void recover_record(password *registros, FILE *data, int len)
       {
          printf("Error de busqueda 1: recover_record()\n");
          Sleep(Wait);
-         // clear();
+         clear();
          do
          {
-            printf("Â¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
+            printf("¿Desea buscar otro registro? (Si -> 1 / No -> 0): ");
             scanf("%hd", &option);
             fflush(stdin);
 
@@ -891,7 +939,7 @@ void recover_record(password *registros, FILE *data, int len)
                recover_record(registros, data, len);
                break;
             default:
-               printf("Error de menÃº 1: recover_record()\n");
+               printf("Error de menú 1: recover_record()\n");
             }
          } while (option != 0);
       }
@@ -900,11 +948,12 @@ void recover_record(password *registros, FILE *data, int len)
          temp.visibilidad = 1;
 
          Sleep(Wait);
-         // clear();
+         clear();
 
          registros[ID_temp].visibilidad = temp.visibilidad;
-         printf("Registros recuperado.\n");
+         printf("Registro recuperado.\n");
          save_data(registros, data, len); //
+      	 Sleep(Wait);
       }
    }
    else
@@ -914,7 +963,7 @@ void recover_record(password *registros, FILE *data, int len)
    }
 }
 
-// AÃºn no trabajo en esta
+// Aún no trabajo en esta
 void reportes_menu(password *registros, FILE *data)
 {
    printf("Reportes.\n");
@@ -922,7 +971,6 @@ void reportes_menu(password *registros, FILE *data)
 
 void init_data(password *registros, FILE *data, int *len)
 {
-   // data = fopen("C:/Users/%USERNAME%/ProyectoFinalData/data.bin", "rb");
    data = fopen(NOMBRE_ARCHIVO, "rb");
 
    if (data == NULL)
@@ -932,7 +980,6 @@ void init_data(password *registros, FILE *data, int *len)
       Sleep(Wait);
       data = fopen(NOMBRE_ARCHIVO, "wb");
       fclose(data);
-      // system("type nul > C:\\Users\\%USERNAME%\\ProyectoFinalData\\data.bin");
       init_data(registros, data, len);
    }
    else
@@ -952,7 +999,7 @@ void init_data(password *registros, FILE *data, int *len)
          printf("Error de lectura 2: init_data()\n");
       }
 
-      printf("Registros inicializados con Ã©xito...\n");
+      printf("Registros inicializados con éxito...\n");
       Sleep(Wait);
    }
 }
@@ -973,13 +1020,13 @@ void save_data(password *registros, FILE *data, int len)
       }
       fflush(data);
       fclose(data);
-      printf("Registros actualizados con Ã©xito.\n");
+      printf("Registros actualizados con éxito.\n");
    }
 }
 
-// Esta mondÃ¡ todavÃ­a no funciona
-void delete_data()
+void delete_data(password *registros, FILE *data, int *len)
 {
+   FILE *archi;
    char clave[] = "0000", temp[5];
 
    boldBar(BarLen);
@@ -991,16 +1038,15 @@ void delete_data()
    gets(temp);
 
    Sleep(Wait);
-   // clear();
+   clear();
 
    if (strcmp(clave, temp) == 0)
    {
       printf("Borrando archivo...\n");
       Sleep(Wait);
-      system("del C:\\Users\\%USERNAME%\\ProyectoFinalData\\data.bin"); // Implementar variables de entorno para recolocar el fichero data.bin en Program Files del windows
-      Sleep(5000);
-      system("type nul > C:\\Users\\%USERNAME%\\ProyectoFinalData\\data.bin");
-      // fflush(stdout);
+      remove("./data/data.bin");
+      Sleep(Wait);
+      init_data(registros, data, len);
    }
    else
    {
@@ -1035,10 +1081,10 @@ void clear()
 
 void print_record(password input)
 {
-   printf("ID : %d -> ", input.ID);
-   printf("Sitio: %s -> ", input.sitio);
-   printf("Usuario: %s -> ", input.usuario);
-   printf("ContraseÃ±a: %s\n", input.contenido);
+   printf("ID : %d | ", input.ID);
+   printf("Sitio: %s | ", input.sitio);
+   printf("Usuario: %s | ", input.usuario);
+   printf("Contraseña: %s\n", input.contenido);
 }
 
 void lists_title(const char *input)
@@ -1074,7 +1120,7 @@ short menu(const char **input)
    printf("\n\t>> 0: %s.\n", input[length - 1]);
 
    lightBar(BarLen);
-   printf("OpciÃ³n: ");
+   printf("Opción: ");
    scanf("%hd", &option);
    fflush(stdin);
    lightBar(BarLen);
@@ -1082,11 +1128,34 @@ short menu(const char **input)
    return option;
 }
 
+void exportar(password *input, int len)
+{
+   FILE *data;
+   data = fopen("./data/export.txt", "w");
+
+   if (data == NULL)
+   {
+      printf("Error de escritura 1: exportar()\n");
+   }
+   else
+   {
+      for (int flag = 0; flag < len; flag++)
+      {
+         fprintf(data, "ID : %d \n Sitio: %s \n Usuario: %s \n Contraseña: %s\n", input[flag].ID, input[flag].sitio, input[flag].usuario, input[flag].contenido);
+      }
+      fflush(data);
+      fclose(data);
+   }
+
+   system("python pdf.py");
+   system("start ./data/export.pdf");
+}
+
 /*Listado de errores.
 (Errores de lectura)
 {
    Error de lectura 1: El fichero data.bin no existe.
-   Error de lectura 2: El fichero data.bin estÃ¡ vacÃ­o o no contiene registros.
+   Error de lectura 2: El fichero data.bin está vacío o no contiene registros.
 }
 
 (Errores de escritura)
@@ -1094,19 +1163,19 @@ short menu(const char **input)
    Error de escritura 1: El fichero data.bin no existe.
 }
 
-(Errores de menÃº)
+(Errores de menú)
 {
-   Error de menÃº 1: La opciÃ³n seleccionada por el usuario no es vÃ¡lida.
+   Error de menú 1: La opción seleccionada por el usuario no es válida.
 }
 
-(Errores de bÃºsqueda)
+(Errores de busqueda)
 {
-   Error de busqueda 1: El ID brindado no coincide con ningÃºn registro.
+   Error de busqueda 1: El ID brindado no coincide con ningun registro.
    Error de busqueda 2: No hay registros que coincidan con el filtro.
 }
 
-(Errores de creaciÃ³n)
+(Errores de creación)
 {
-   Error de creaciÃ³n 1: No se reconoce la opciÃ³n de creaciÃ³n. Valores posibles: 0 o 1.
+   Error de creación 1: No se reconoce la opción de creación. Valores posibles: 0 o 1.
 }
 */

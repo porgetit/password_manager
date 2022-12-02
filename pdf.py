@@ -1,4 +1,10 @@
 from fpdf import FPDF
+from pathlib import Path
+
+cwd = Path(__file__).parent
+
+cwd = str(cwd)
+cwd += '\data\export'
 
 pdf = FPDF()
 
@@ -7,11 +13,14 @@ pdf.add_font('Arial', '', 'c:/windows/fonts/arial.ttf', uni=True)
 
 pdf.set_font("Arial", size=12)
 
-file = open("D:\\Users\\xdpor\\Documents\\Estudio\\ing_de_sistemas\\segundo_semestre\\programacion_2\\proyecto_final\\data\\export.txt", "r")
+path1 = cwd + '.txt'
+file = open(path1, "r")
 
 for x in file:
     pdf.cell(200, 10, txt=x, ln=1, align='L')
 
-pdf.output("D:\\Users\\xdpor\\Documents\\Estudio\\ing_de_sistemas\\segundo_semestre\\programacion_2\\proyecto_final\\data\\export.pdf")
+
+path2 = cwd + '.pdf'
+pdf.output(path2)
 
 file.close()

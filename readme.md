@@ -48,4 +48,4 @@ Este proyecto nace de la idea de mantener ordenadas las cuentas de usuario de di
 Hasta el 1 de diciembre del año 2022, han trabajado en este proyecto:
 
 - Kevin Esguerra Cardona
-- Juan Estebas García Pulgarín
+- Juan Esteban García Pulgarín

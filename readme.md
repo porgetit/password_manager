@@ -49,3 +49,9 @@ Hasta el 1 de diciembre del año 2022, han trabajado en este proyecto:
 
 - Kevin Esguerra Cardona
 - Juan Esteban García Pulgarín
+
+---
+
+### Cambios:
+
+Para esta branch, busco reescribir todo el proyecto en Python. Para hacerlo más compatible.
